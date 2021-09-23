@@ -55,7 +55,9 @@ def import_classes_in_specific_script(module_path: str, base_class: type):
 
 
 def import_classes_in_file(file_path, base_class):
-    imported_module = importlib.util.spec_from_file_location("", file_path).loader.load_module()
+    directory, file = os.path.split(file_path)
+    file_name, ext = os.path.splitext(file)
+    imported_module = importlib.util.spec_from_file_location(file_name, file_path).loader.load_module()
     mod_classes = _import_module_classes(imported_module, base_class)
     classes = []
     for cls in mod_classes:
@@ -108,10 +110,11 @@ def _import_module_classes(module, base_class):
     for i in dir(module):
         attribute = getattr(module, i)
         if inspect.isclass(attribute) \
-                and not inspect.isabstract(attribute) \
-                and issubclass(attribute, base_class) \
-                and attribute != base_class \
-                and not issubclass(attribute, NotImport):
+            and not inspect.isabstract(attribute) \
+            and issubclass(attribute, base_class) \
+            and attribute != base_class \
+            and not issubclass(attribute, NotImport) \
+            and module.__name__ == attribute.__module__:
             classes.add(attribute)
 
     return classes
@@ -121,10 +124,13 @@ def _classes_are_equal(cls_A, cls_B):
     module1 = cls_A.__module__
     module2 = cls_B.__module__
     if module1.endswith(module2) or module2.endswith(module1):
-        source1 = inspect.getsource(cls_A)
-        source2 = inspect.getsource(cls_B)
-        if source1 == source2:
-            return True
+        class_name1 = cls_A.__name__
+        class_name2 = cls_B.__name__
+        if class_name1 == class_name2:
+            source1 = inspect.getsource(cls_A)
+            source2 = inspect.getsource(cls_B)
+            if source1 == source2:
+                return True
     return False
 
 

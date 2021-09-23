@@ -57,7 +57,6 @@ class TestImports(unittest.TestCase):
         # arrange
         path = "C:/_cosas/Desarrollo/Proyectos/Python/propsettings/propsettings/setting.py"
 
-
         # act
         classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
         names = [cls.__name__ for cls in classes]
