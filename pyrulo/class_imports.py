@@ -3,6 +3,7 @@ import importlib.util
 import inspect
 import logging
 import os.path
+from pathlib import Path
 import pkgutil
 
 
@@ -57,7 +58,17 @@ def import_classes_in_specific_script(module_path: str, base_class: type):
 def import_classes_in_file(file_path, base_class):
     directory, file = os.path.split(file_path)
     file_name, ext = os.path.splitext(file)
-    imported_module = importlib.util.spec_from_file_location(file_name, file_path).loader.load_module()
+    inside = _is_path_inside_working_dir(file_path)
+    if inside:
+        directory, file = os.path.split(file_path)
+        file_name, _ = os.path.splitext(file)
+        module_name = _get_module_name_from_path(directory, file_name)
+        try:
+            imported_module = importlib.import_module(module_name)  # try to load with path
+        except ModuleNotFoundError:
+            imported_module = importlib.util.spec_from_file_location(file_name, file_path).loader.load_module()
+    else:
+        imported_module = importlib.util.spec_from_file_location(file_name, file_path).loader.load_module()
     mod_classes = _import_module_classes(imported_module, base_class)
     classes = []
     for cls in mod_classes:
@@ -76,6 +87,7 @@ def import_classes_by_dir(dir_path, base_class, recursive=True):
     """
     classes = []
 
+    inside = _is_path_inside_working_dir(dir_path)
     absolute = os.path.abspath(dir_path)
 
     if '.' in absolute:
@@ -84,7 +96,14 @@ def import_classes_by_dir(dir_path, base_class, recursive=True):
 
     for (modinfo, name, ispkg) in pkgutil.iter_modules([dir_path]):
         if not ispkg:
-            imported_module = modinfo.find_spec(name).loader.load_module()
+            if inside:
+                module_name = _get_module_name_from_path(dir_path, name)
+                try:
+                    imported_module = importlib.import_module(module_name)  # try to load with path
+                except ModuleNotFoundError:
+                    imported_module = modinfo.find_spec(name).loader.load_module()
+            else:
+                imported_module = modinfo.find_spec(name).loader.load_module()
             mod_classes = _import_module_classes(imported_module, base_class)
             for cls in mod_classes:
                 _add_class_if_not_exists(classes, cls)
@@ -120,6 +139,22 @@ def _import_module_classes(module, base_class):
     return classes
 
 
+def _get_module_name_from_path(module_dir, module_name):
+    if os.path.isabs(module_dir):
+        rel = os.path.relpath(module_dir)
+    else:
+        rel = module_dir
+    rel_stripped = rel.strip('./\\')
+    module = rel_stripped.replace('/', '.').replace('\\', '.')
+
+    if module == "":
+        module = module_name
+    else:
+        module = f"{module}.{module_name}"
+
+    return module
+
+
 def _classes_are_equal(cls_A, cls_B):
     module1 = cls_A.__module__
     module2 = cls_B.__module__
@@ -132,6 +167,11 @@ def _classes_are_equal(cls_A, cls_B):
             if source1 == source2:
                 return True
     return False
+
+
+def _is_path_inside_working_dir(p: str):
+    rel_path = os.path.relpath(p)
+    return not rel_path.startswith(".")
 
 
 def _add_class_if_not_exists(classes, new_class):

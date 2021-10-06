@@ -44,16 +44,27 @@ class TestImports(unittest.TestCase):
 
     def test_whenImportClassFromFile_resultsIsTheExpected(self):
         # arrange
-        path = "C:/_cosas/Desarrollo/Proyectos/Python/propsettings/propsettings/setting.py"
+        path = "test_classes/a.py"
 
         # act
         classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
         names = [cls.__name__ for cls in classes]
 
         # assert
-        self.assertIn("Setting", names)
+        self.assertIn("A", names)
 
     def test_whenImportClassFromFileByKey_resultsIsTheExpected(self):
+        # arrange
+        path = "test_classes/a.py"
+
+        # act
+        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        names = [cls.__name__ for cls in classes]
+
+        # assert
+        self.assertIn("A", names)
+
+    def test_whenImportClassesFromExternalFile_resultIsTheExpected(self):
         # arrange
         path = "C:/_cosas/Desarrollo/Proyectos/Python/propsettings/propsettings/setting.py"
 
@@ -63,6 +74,17 @@ class TestImports(unittest.TestCase):
 
         # assert
         self.assertIn("Setting", names)
+
+    def test_whenImportClassesFromSiblingFile_resultIsTheExpected(self):
+        # arrange
+        path = "sibling_classes.py"
+
+        # act
+        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        names = [cls.__name__ for cls in classes]
+
+        # assert
+        self.assertIn("Sibling", names)
 
 
 if __name__ == '__main__':

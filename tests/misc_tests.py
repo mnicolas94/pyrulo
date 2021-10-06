@@ -14,5 +14,4 @@ if __name__ == '__main__':
     path = "test_classes"
     classes = pyrulo.class_imports.import_classes_by_dir(path, object)
 
-
     print(classes)
