@@ -47,7 +47,7 @@ class TestImports(unittest.TestCase):
         path = "test_classes/a.py"
 
         # act
-        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        classes = pyrulo.class_imports.import_classes_in_file(path, object)
         names = [cls.__name__ for cls in classes]
 
         # assert
@@ -58,7 +58,7 @@ class TestImports(unittest.TestCase):
         path = "test_classes/a.py"
 
         # act
-        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        classes = pyrulo.class_imports.import_classes_in_file(path, object)
         names = [cls.__name__ for cls in classes]
 
         # assert
@@ -69,7 +69,7 @@ class TestImports(unittest.TestCase):
         path = "C:/_cosas/Desarrollo/Proyectos/Python/propsettings/propsettings/setting.py"
 
         # act
-        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        classes = pyrulo.class_imports.import_classes_in_file(path, object)
         names = [cls.__name__ for cls in classes]
 
         # assert
@@ -80,7 +80,7 @@ class TestImports(unittest.TestCase):
         path = "sibling_classes.py"
 
         # act
-        classes = pyrulo.class_imports.import_classes_in_specific_script(path, object)
+        classes = pyrulo.class_imports.import_classes_in_file(path, object)
         names = [cls.__name__ for cls in classes]
 
         # assert

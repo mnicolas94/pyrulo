@@ -3,7 +3,6 @@ import importlib.util
 import inspect
 import logging
 import os.path
-from pathlib import Path
 import pkgutil
 
 
@@ -31,7 +30,7 @@ def import_classes_by_key(key):
     return classes
 
 
-def import_classes_in_specific_script_by_key(module_path: str, key):
+def import_classes_in_file_by_key(module_path: str, key):
     classes = []
     if key in _registered_classes:
         registered_list = _registered_classes[key]
@@ -43,15 +42,6 @@ def import_classes_in_specific_script_by_key(module_path: str, key):
                     classes.append(cls)
     else:
         logging.warning(f"There are no classes registered with that key: {key}")
-    return classes
-
-
-def import_classes_in_specific_script(module_path: str, base_class: type):
-    classes = []
-    imported_classes = import_classes_in_file(module_path, base_class)
-    for cls in imported_classes:
-        if cls not in classes:
-            classes.append(cls)
     return classes
 
 
@@ -75,7 +65,6 @@ def import_classes_in_file(file_path, base_class):
         _add_class_if_not_exists(classes, cls)
 
     return classes
-
 
 def import_classes_by_dir(dir_path, base_class, recursive=True):
     """
