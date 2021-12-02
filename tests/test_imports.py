@@ -16,7 +16,7 @@ class TestImports(unittest.TestCase):
         path = "test_classes"
 
         # act
-        classes = pyrulo.class_imports.import_classes_by_dir(path, object, False)
+        classes = pyrulo.class_imports.import_classes_in_dir(path, object, False)
         names = [cls.__name__ for cls in classes]
         counts = {}
         for name in names:
@@ -36,7 +36,7 @@ class TestImports(unittest.TestCase):
         path = "C:/_cosas/Desarrollo/Proyectos/Python/propsettings/propsettings"
 
         # act
-        classes = pyrulo.class_imports.import_classes_by_dir(path, object, False)
+        classes = pyrulo.class_imports.import_classes_in_dir(path, object, False)
         names = [cls.__name__ for cls in classes]
 
         # assert

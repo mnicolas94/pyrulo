@@ -21,7 +21,7 @@ def import_classes_by_key(key):
         registered_list = _registered_classes[key]
 
         for classes_dir, base_class, recursive in registered_list:
-            imported_classes = import_classes_by_dir(classes_dir, base_class, recursive)
+            imported_classes = import_classes_in_dir(classes_dir, base_class, recursive)
             for cls in imported_classes:
                 if cls not in classes:
                     classes.append(cls)
@@ -66,7 +66,8 @@ def import_classes_in_file(file_path, base_class):
 
     return classes
 
-def import_classes_by_dir(dir_path, base_class, recursive=True):
+
+def import_classes_in_dir(dir_path, base_class, recursive=True):
     """
     Importar las clases de los scripts que estén en un directorio.
     :param dir_path: directorio de los scripts.
@@ -101,7 +102,7 @@ def import_classes_by_dir(dir_path, base_class, recursive=True):
         for d in os.listdir(dir_path):
             subdir = os.path.join(dir_path, d)
             if os.path.isdir(subdir) and not subdir.endswith('__pycache__'):
-                mod_classes = import_classes_by_dir(subdir, base_class, recursive)
+                mod_classes = import_classes_in_dir(subdir, base_class, recursive)
                 for cls in mod_classes:
                     _add_class_if_not_exists(classes, cls)
     return classes
